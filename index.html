@@ -1,22 +1,105 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
   <title>Bulk SMS Sender</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Bootstrap -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+  <style>
+    body {
+      background: linear-gradient(135deg, #0d6efd, #6610f2);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .sms-card {
+      max-width: 450px;
+      width: 100%;
+      border-radius: 16px;
+      box-shadow: 0 20px 40px rgba(0,0,0,.2);
+    }
+
+    .counter {
+      font-size: 0.85rem;
+      text-align: right;
+      color: #6c757d;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>Bulk SMS System</h2>
+<div class="card sms-card">
+  <div class="card-body p-4">
 
-<input type="file" id="excelFile" />
-<br><br>
+    <h3 class="text-center mb-4">📩 Bulk SMS System</h3>
 
-<textarea id="message" placeholder="Enter message"></textarea>
-<br><br>
+    <!-- Excel Upload -->
+    <div class="mb-3">
+      <label class="form-label">Upload Excel</label>
+      <input type="file" class="form-control" id="excelFile" accept=".xls,.xlsx">
+    </div>
 
-<button onclick="sendSMS()">Send SMS</button>
+    <!-- Template Dropdown -->
+    <div class="mb-3">
+      <label class="form-label">Message Template</label>
+      <select class="form-select" onchange="applyTemplate(this.value)">
+        <option value="">-- Select Template --</option>
+        <option value="Dear Customer, your OTP is {otp}.">OTP Message</option>
+        <option value="Hello {name}, your bill is due today.">Billing Reminder</option>
+        <option value="Thanks for registering with us!">Welcome Message</option>
+      </select>
+    </div>
 
-<p id="status"></p>
+    <!-- Message -->
+    <div class="mb-2">
+      <label class="form-label">Message</label>
+      <textarea id="message" class="form-control" rows="3"
+        oninput="updateCounter()" placeholder="Enter SMS text"></textarea>
+      <div class="counter">
+        <span id="charCount">0</span> / 160 characters
+      </div>
+    </div>
 
+    <!-- Send Button -->
+    <div class="d-grid my-3">
+      <button class="btn btn-primary btn-lg" onclick="sendSMS()">
+        Send SMS
+      </button>
+    </div>
+
+    <!-- Spinner -->
+    <div class="text-center d-none" id="loading">
+      <div class="spinner-border text-primary"></div>
+      <p class="mt-2">Sending SMS...</p>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress d-none" id="progressBox">
+      <div class="progress-bar progress-bar-striped progress-bar-animated"
+        id="progressBar" style="width:0%">0%</div>
+    </div>
+
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+  <div id="toastMsg" class="toast align-items-center text-white bg-success">
+    <div class="d-flex">
+      <div class="toast-body" id="toastText">Success</div>
+      <button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 <script src="app.js"></script>
 
